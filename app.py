@@ -9,6 +9,7 @@ app = Flask(__name__)
 
 # Connect to the database
 connection = pymysql.connect(host=os.environ.get('CLEARDB_DATABASE_HOST'),
+                             port=3306,
                              user=os.environ.get('CLEARDB_DATABASE_USER'),
                              password=os.environ.get('CLEARDB_DATABASE_PASSWORD'),
                              db=os.environ.get('CLEARDB_DATABASE_DB'),
