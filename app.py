@@ -8,10 +8,10 @@ import pymysql.cursors
 app = Flask(__name__)
 
 # Connect to the database
-connection = pymysql.connect(host="us-cdbr-east-05.cleardb.net",
-                             user="b809ff374c792c",
-                             password="obbc8de98",
-                             db="heroku_9a97caadd884ab8",
+connection = pymysql.connect(host=os.environ.get('CLEARDB_DATABASE_HOST'),
+                             user=os.environ.get('CLEARDB_DATABASE_USER'),
+                             password=os.environ.get('CLEARDB_DATABASE_PASSWORD'),
+                             db=os.environ.get('CLEARDB_DATABASE_DB'),
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
 
