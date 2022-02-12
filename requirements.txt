@@ -1,0 +1,5 @@
+gunicorn
+line-bot-sdk
+flask
+audioread
+PyMySQL
