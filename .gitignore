@@ -2,5 +2,3 @@
 *.log
 MySQL_lecture.pdf
 MySQL_Heroku_settings.txt
-config.ini
-.DS_STORE
