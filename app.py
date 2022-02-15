@@ -8,7 +8,8 @@ import json
 import configparser
 import os
 from urllib import parse
-import mysql.connector  # for databse
+import mysql.connector
+from datetime import datetime
 
 app = Flask(__name__, static_url_path='/static')
 UPLOAD_FOLDER = 'static'
@@ -406,8 +407,23 @@ def line_login():
 def sql_select():
     pass
 
-def sql_insert():
-    pass
+# 打卡功能；須代入員工ID(EMPNO)呼叫
+def sql_insert_wlog(empno):
+    connection = mysql.connector.connect(
+        host="us-cdbr-east-05.cleardb.net",
+        database="heroku_9a97caadd884ab8",
+        user="b809ff374c792c",
+        password="bbc8de98")
+
+    create_date = datetime.today().strftime('%Y-%m-%d')  # 得到當前日期
+    create_time = datetime.today().strftime('%H:%M:%S')  # 得到當前時間
+
+    # 在mysql中，時間資料也是字串，故create_date和create_time還要有一組雙引號
+    insert_sql = f"insert into wlog (EMPNO , CREATE_DATE, CREATE_TIME) values ({empno}, '{create_date}', '{create_time}')"
+
+    mycursor = connection.cursor()
+    mycursor.execute(insert_sql)
+    connection.commit()
 
 
 if __name__ == "__main__":
