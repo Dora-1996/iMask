@@ -8,6 +8,8 @@ import json
 import configparser
 import os
 from urllib import parse
+import mysql.connector  # for databse
+
 app = Flask(__name__, static_url_path='/static')
 UPLOAD_FOLDER = 'static'
 ALLOWED_EXTENSIONS = set(['pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -28,6 +30,12 @@ HEADER = {
     'Authorization': F'Bearer {config.get("line-bot", "channel_access_token")}'
 }
 
+# connect to ClearDB mySQL
+connection = mysql.connector.connect(
+    host="us-cdbr-east-05.cleardb.net",
+    database="heroku_9a97caadd884ab8",
+    user="b809ff374c792c",
+    password="bbc8de98")
 
 @app.route("/", methods=['POST', 'GET'])
 def index():
@@ -217,8 +225,6 @@ def getCarouselMessage(data):
         }
     return message
 
-
-
 def getLocationConfirmMessage(title, latitude, longitude):
     data = {'title': title, 'latitude': latitude, 'longitude': longitude,
             'action': 'get_near'}
@@ -395,6 +401,13 @@ def line_login():
         else:
             return render_template('login.html', client_id=line_login_id,
                                    end_point=end_point)
+
+# mysql function
+def sql_select():
+    pass
+
+def sql_insert():
+    pass
 
 
 if __name__ == "__main__":
