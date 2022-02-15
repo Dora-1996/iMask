@@ -1,0 +1,12 @@
+python_flask_Notice：
+(1)插入資料：若要insert時間資料，需要在SQL語法中，將要填入的日期時間資料，再用一個與外部引號相異的引號括起來。
+例"INSERT TABLE VALUE ('時間')"
+(2)搜尋資料：套件選擇
+mysql.connector套件會回傳bytearray格式的資料，需要先將bytearray格式的資料作解碼以取得其中資料。作法：bytearray_data.decode()。
+處理比較麻煩。
+故採用回傳資料是dict的pymysql套件。
+(3)
+pymysql讀回的時間資料會是以秒數表達數值的datetime.timedelta，
+故在處理時要轉為字串，才能正常顯示。
+
+
