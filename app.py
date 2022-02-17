@@ -9,6 +9,9 @@ import configparser
 import os
 from urllib import parse
 from datetime import datetime
+import pymysql
+import pymysql.cursors
+from datetime import datetime
 
 
 
@@ -73,7 +76,8 @@ def index():
                                 "text": getTodayCovid19Message()
                             }
                         ]
-
+                elif text == "打卡":
+                    payload["messages"] = [daka()]
                 elif text == "主選單":
                     payload["messages"] = [
                             {
@@ -171,6 +175,22 @@ def pretty_echo(event):
 def sendTextMessageToMe():
     pushMessage({})
     return 'OK'
+
+
+def daka(EMPNO):
+    connection = pymysql.connect(host="us-cdbr-east-05.cleardb.net",
+                                 user="b809ff374c792c",
+                                 password="bbc8de98",
+                                 database="heroku_9a97caadd884ab8",
+                                 charset='utf8mb4',
+                                 cursorclass=pymysql.cursors.DictCursor)
+    with connection.cursor() as cursor:
+        create_date = datetime.today().strftime('%Y-%m-%d')  # 得到當前日期
+        create_time = datetime.today().strftime('%H:%M:%S')  # 得到當前時間
+        # 在mysql中，時間資料也是字串，故create_date和create_time還要有一組雙引號
+        sql = f"insert into wlog (EMPNO , CREATE_DATE, CREATE_TIME) values ('{EMPNO}', '{create_date}', '{create_time}')"
+        cursor.execute(sql)
+    connection.commit()
 
 
 def getNameEmojiMessage():

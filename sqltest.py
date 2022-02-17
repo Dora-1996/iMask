@@ -13,6 +13,12 @@ connection = pymysql.connect(host="us-cdbr-east-05.cleardb.net",
 
 # 打卡：創建時間資料
 def daka(EMPNO):
+    connection = pymysql.connect(host="us-cdbr-east-05.cleardb.net",
+                                 user="b809ff374c792c",
+                                 password="bbc8de98",
+                                 database="heroku_9a97caadd884ab8",
+                                 charset='utf8mb4',
+                                 cursorclass=pymysql.cursors.DictCursor)
     with connection.cursor() as cursor:
         create_date = datetime.today().strftime('%Y-%m-%d')  # 得到當前日期
         create_time = datetime.today().strftime('%H:%M:%S')  # 得到當前時間
