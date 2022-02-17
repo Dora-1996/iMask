@@ -20,6 +20,8 @@ def daka(EMPNO):
         sql = f"insert into wlog (EMPNO , CREATE_DATE, CREATE_TIME) values ('{EMPNO}', '{create_date}', '{create_time}')"
         cursor.execute(sql)
     connection.commit()
+    
+    
 
 # 打卡創用範例
 # daka(21)  # 自己改數字
