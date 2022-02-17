@@ -53,9 +53,7 @@ def index():
         if events[0]["type"] == "message":
             if events[0]["message"]["type"] == "text":
                 text = events[0]["message"]["text"]
-                if   text == "打卡"
-                    payload["messages"] = [getdaka(EMPNOS)]
-                elif text == "我的名字":
+                if text == "我的名字":
                     payload["messages"] = [getNameEmojiMessage()]
                 elif text == "出去玩囉":
                     payload["messages"] = [getPlayStickerMessage()]
@@ -81,6 +79,9 @@ def index():
                                 "text": getTodayCovid19Message()
                             }
                         ]
+                elif text == "打卡":
+                    payload["messages"] = [daka()]
+
                 elif text == "主選單":
                     payload["messages"] = [
                             {
@@ -179,7 +180,7 @@ def sendTextMessageToMe():
     pushMessage({})
     return 'OK'
 
-def daka(EMPNO):
+def daka():
     with connection.cursor() as cursor:
         create_date = datetime.today().strftime('%Y-%m-%d')  # 得到當前日期
         create_time = datetime.today().strftime('%H:%M:%S')  # 得到當前時間
