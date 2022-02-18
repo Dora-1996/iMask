@@ -12,11 +12,9 @@ from urllib import parse
 import time
 import pymysql
 
-
 app = Flask(__name__, static_url_path='/static')
 UPLOAD_FOLDER = 'static'
 ALLOWED_EXTENSIONS = set(['pdf', 'png', 'jpg', 'jpeg', 'gif'])
-
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -51,51 +49,44 @@ def index():
 
                 if text == "一般使用者":
                     payload["messages"] = [
-                                            {
-                                            "type":"text",
-                                            "text":"Hello, user"
-                                            },
-                                            {
-                                                "type": "template",
-                                                "altText": "This is a buttons template",
-                                                "template": {
-                                                    "type": "buttons",
-                                                    "title": "Menu",
-                                                    "text": "Please select",
-                                                    "actions": [
-                                                        {
-                                                            "type": "message",
-                                                            "label": "cfi-102",
-                                                            "text": "cfi-102"
-                                                        },
-                                                        {
-                                                            "type": "message",
-                                                            "label": "cfi-103",
-                                                            "text": "cfi-103"
-                                                        }
-                                                    ]
-                                                }
-                                            }
-                                          ]
+                        {
+                            "type": "text",
+                            "text": "Hello, user"
+                        },
+                        {
+                            "type": "template",
+                            "altText": "This is a buttons template",
+                            "template": {
+                                "type": "buttons",
+                                "title": "Menu",
+                                "text": "Please select",
+                                "actions": [
+                                    {
+                                        "type": "message",
+                                        "label": "cfi-102",
+                                        "text": "cfi-102"
+                                    },
+                                    {
+                                        "type": "message",
+                                        "label": "cfi-103",
+                                        "text": "cfi-103"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
                 elif text == "打卡":
                     daka()
-
-                elif text == "打卡查詢":
-                    select_where("WLOG", "EMPNO")
-
-
-
-
 
                     payload["messages"] = [getPlayStickerMessage()]
 
                 else:
                     payload["messages"] = [
-                            {
-                                "type": "text",
-                                "text": text
-                            }
-                        ]
+                        {
+                            "type": "text",
+                            "text": text
+                        }
+                    ]
                 replyMessage(payload)
 
     return 'OK'
@@ -130,39 +121,19 @@ def getPlayStickerMessage():
 
 
 def replyMessage(payload):
-    response = requests.post("https://api.line.me/v2/bot/message/reply",headers=HEADER,data=json.dumps(payload))
+    response = requests.post("https://api.line.me/v2/bot/message/reply", headers=HEADER, data=json.dumps(payload))
     return 'OK'
 
 
 def pushMessage(payload):
-    response = requests.post("https://api.line.me/v2/bot/message/push",headers=HEADER,data=json.dumps(payload))
+    response = requests.post("https://api.line.me/v2/bot/message/push", headers=HEADER, data=json.dumps(payload))
     return 'OK'
 
 
 def getTotalSentMessageCount():
-    response = requests.get("https://api.line.me/v2/bot/message/quota/consumption",headers=HEADER)
+    response = requests.get("https://api.line.me/v2/bot/message/quota/consumption", headers=HEADER)
     return response.json()["totalUsage"]
 
-def select_where(WLOG, EMPNO):
-    connection = pymysql.connect(host="us-cdbr-east-05.cleardb.net",
-                                 user="b809ff374c792c",
-                                 password="bbc8de98",
-                                 database="heroku_9a97caadd884ab8")
-    with connection.cursor() as cursor:
-        sql = f"select * from {WLOG} where EMPNO = {EMPNO}"
-        cursor.execute(sql)
-
-        # 獲取一筆資料
-        # result = cursor.fetchone()
-        # result["CREATE_TIME"] = str(result["CREATE_TIME"])  # 若時間欄位不處理，會得到以秒數表達數值的datetime.timedelta
-        # print(result,"\n","-"*50)
-
-        # 獲取多筆資料
-        result_list = cursor.fetchall()  # 得到list
-        for row in result_list:
-            row["CREATE_TIME"] = str(row["CREATE_TIME"]) # 若時間欄位不處理，會得到以秒數表達數值的datetime.timedelta
-            print(row)
-select_where("WLOG", 100)
 
 def daka():
     connection = pymysql.connect(host="us-cdbr-east-05.cleardb.net",
@@ -180,6 +151,7 @@ def daka():
     connection.commit()
     cursor.close()
     connection.close()
+
 
 if __name__ == "__main__":
     app.debug = True
