@@ -79,6 +79,16 @@ def index():
                     daka()
 
                     payload["messages"] = [getPlayStickerMessage()]
+                elif text == "打卡查詢":
+                    payload["messages"] = [{
+                                               "type": "datetimepicker",
+                                               "label": "Select date",
+                                               "data": "storeId=12345",
+                                               "mode": "datetime",
+                                               "initial": "2017-12-25t00:00",
+                                               "max": "2018-01-24t23:59",
+                                               "min": "2017-12-25t00:00"
+                                            }]
 
 
                 else:
