@@ -79,6 +79,8 @@ def index():
                     daka()
 
                     payload["messages"] = [getPlayStickerMessage()]
+                elif text == "打卡查詢":
+                    select_where()
 
                 else:
                     payload["messages"] = [
@@ -134,6 +136,26 @@ def getTotalSentMessageCount():
     response = requests.get("https://api.line.me/v2/bot/message/quota/consumption", headers=HEADER)
     return response.json()["totalUsage"]
 
+def select_where(table, EMPNO):
+    connection = pymysql.connect(host="us-cdbr-east-05.cleardb.net",
+                                 user="b809ff374c792c",
+                                 password="bbc8de98",
+                                 database="heroku_9a97caadd884ab8")
+    with connection.cursor() as cursor:
+        sql = f"select * from {table} where EMPNO = {EMPNO}"
+        cursor.execute(sql)
+
+        # 獲取一筆資料
+        # result = cursor.fetchone()
+        # result["CREATE_TIME"] = str(result["CREATE_TIME"])  # 若時間欄位不處理，會得到以秒數表達數值的datetime.timedelta
+        # print(result,"\n","-"*50)
+
+        # 獲取多筆資料
+        result_list = cursor.fetchall()  # 得到list
+        for row in result_list:
+            row["CREATE_TIME"] = str(row["CREATE_TIME"]) # 若時間欄位不處理，會得到以秒數表達數值的datetime.timedelta
+            print(row)
+select_where("WLOG", 100)
 
 def daka():
     connection = pymysql.connect(host="us-cdbr-east-05.cleardb.net",
