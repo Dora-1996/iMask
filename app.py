@@ -69,7 +69,7 @@ def index():
                                     },
                                     {
                                         "type": "message",
-                                        "label": "cfi-103",
+                                        "label": "cfi-103", 
                                         "text": "cfi-103"
                                     }
                                 ]
@@ -80,7 +80,8 @@ def index():
                     daka()
                     payload["messages"] = [getPlayStickerMessage()]
                     
-                elif text == "打卡查詢" : getdatetimepicker()
+                elif text == "打卡查詢" : 
+                    payload["messages"]= [getdatetimepicker()]
 
 
                 else:
@@ -122,15 +123,44 @@ def getPlayStickerMessage():
     message["stickerId"] = "10979904"
     return message
 
+
+@handler.add(MessageEvent, message=TextMessage)
+def pretty_echo(event):
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=event.message.text)
+        )
+
+
+
+
+
 def getdatetimepicker():
-    message = dict()
-    message["type"] = "datetimepicker"
-    message["label"] = "Select date"
-    message["data"] = "storeId=12345"                                           
-    message["mode"] = "datetime"
-    message["initial"] = "2017-12-25t00:00"
-    message["max"] = "2018-01-24t23:59"                                            
-    message["min"] = "2017-12-25t00:00"
+    message = {
+               "events": [
+                            {
+                                "replyToken": "b60d432864f44d079f6d8efe86cf404b",
+                                "type": "postback",
+                                "mode": "active",
+                                "source": {
+                                    "userId": "U91eeaf62d...",
+                                    "type": "user"
+                                },
+                                "timestamp": 1513669370317,
+                                "postback": {
+                                            "type":"datetimepicker",
+                                            "label":"Select date",
+                                            "data":"storeId=12345",
+                                            "mode":"datetime",
+                                            "initial":"2017-12-25t00:00",
+                                            "max":"2018-01-24t23:59",
+                                            "min":"2017-12-25t00:00"
+                                            }
+                            }
+                        ]
+                    }
+    return message
+
 
 def replyMessage(payload):
     response = requests.post("https://api.line.me/v2/bot/message/reply", headers=HEADER, data=json.dumps(payload))
