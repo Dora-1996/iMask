@@ -137,6 +137,8 @@ def getdatetimepicker():
                                                             min="2011-06-23",
                                                             max="2100-09-08"
                                                         )
+                                                        ]
+                                                        )
     return button_template_message
 line_bot_api = LineBotApi(config.get('line-bot', 'channel_access_token'))
 
