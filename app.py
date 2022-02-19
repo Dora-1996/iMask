@@ -136,7 +136,7 @@ def getdatetimepicker():
                "type": "datetimepicker",
                "label": "打卡紀錄",
                "data": "storeId=12345",
-               "mode": "datetime"
+               "mode": "datetime",
                "initial":"2017-12-25t00:00",
                "max":"2018-01-24t23:59",
                "min":"2017-12-25t00:00"
