@@ -92,7 +92,10 @@ def index():
                         }
                     ]
                 replyMessage(payload)
-
+        elif events[0]["type"] == "postback":
+                payload["messages"] = [
+                                           getdatetimepicker()]
+                replyMessage(payload)
     return 'OK'
 
 
