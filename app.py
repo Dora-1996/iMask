@@ -3,7 +3,7 @@ from email import message
 from flask import Flask, request, abort, render_template
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, ButtonsTemplate,  DatetimePickerTemplateAction
 import requests
 import json
 import configparser
@@ -81,7 +81,7 @@ def index():
                     payload["messages"] = [getPlayStickerMessage()]
                     
                 elif text == "打卡查詢" : 
-                    payload["messages"]= [getdatetimepicker()]
+                    payload["button_template_message"] = [getdatetimepicker()]
 
 
                 else:
@@ -124,32 +124,28 @@ def getPlayStickerMessage():
     return message
 
 
-@handler.add(MessageEvent, message=TextMessage)
 def getdatetimepicker():
-    message = {
-               "events": [
-                            {
-                                "replyToken": "b60d432864f44d079f6d8efe86cf404b",
-                                "type": "postback",
-                                "mode": "active",
-                                "source": {
-                                    "userId": "U91eeaf62d...",
-                                    "type": "user"
-                                },
-                                "timestamp": 1513669370317,
-                                "postback": {
-                                            "type":"datetimepicker",
-                                            "label":"Select date",
-                                            "data":"storeId=12345",
-                                            "mode":"datetime",
-                                            "initial":"2017-12-25t00:00",
-                                            "max":"2018-01-24t23:59",
-                                            "min":"2017-12-25t00:00"
-                                            }
-                            }
-                        ]
-                    }
-    return message
+    button_template_message = ButtonsTemplate(
+                                                thumbnail_image_url="https://cdn.pixabay.com/photo/2015/07/23/15/23/cat-857076_1280.jpg",
+                                                title='打卡紀錄', 
+                                                actions=[
+                                                        DatetimePickerTemplateAction(
+                                                            label="查詢時間",
+                                                            data="action=sell&itemid=2&mode=date",
+                                                            mode="date",
+                                                            initial="2013-04-01",
+                                                            min="2011-06-23",
+                                                            max="2100-09-08"
+                                                        )
+    return button_template_message
+line_bot_api = LineBotApi(config.get('line-bot', 'channel_access_token'))
+
+try:
+#     alt_text 因template只能夠在手機上顯示，因此在PC版會使用alt_Text替代
+    line_bot_api.push_message(to, TemplateSendMessage(alt_text="Template Example", template=button_template_message))
+except LineBotApiError as e:
+    # error handle
+    raise e
 
 
 def replyMessage(payload):
