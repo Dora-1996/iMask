@@ -80,8 +80,7 @@ def index():
                     daka()
                     payload["messages"] = [getPlayStickerMessage()]
                     
-                elif text == "打卡查詢":
-                    payload["messages"] = [getdatetimepicker()]
+                elif text == "打卡查詢" : getdatetimepicker()
 
 
                 else:
