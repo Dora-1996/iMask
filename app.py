@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from email import message
 from flask import Flask, request, abort, render_template
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -77,18 +78,10 @@ def index():
                     ]
                 elif text == "打卡":
                     daka()
-
                     payload["messages"] = [getPlayStickerMessage()]
+                    
                 elif text == "打卡查詢":
-                    payload["messages"] = [{
-                                               "type": "datetimepicker",
-                                               "label": "Select date",
-                                               "data": "storeId=12345",
-                                               "mode": "datetime",
-                                               "initial": "2017-12-25t00:00",
-                                               "max": "2018-01-24t23:59",
-                                               "min": "2017-12-25t00:00"
-                                            }]
+                    payload["messages"] = [getdatetimepicker()]
 
 
                 else:
@@ -130,6 +123,15 @@ def getPlayStickerMessage():
     message["stickerId"] = "10979904"
     return message
 
+def getdatetimepicker():
+    message = dict()
+    message["type"] = "datetimepicker"
+    message["label"] = "Select date"
+    message["data"] = "storeId=12345"                                           
+    message["mode"] = "datetime"
+    message["initial"] = "2017-12-25t00:00"
+    message["max"] = "2018-01-24t23:59"                                            
+    message["min"] = "2017-12-25t00:00"
 
 def replyMessage(payload):
     response = requests.post("https://api.line.me/v2/bot/message/reply", headers=HEADER, data=json.dumps(payload))
