@@ -125,16 +125,6 @@ def getPlayStickerMessage():
 
 
 @handler.add(MessageEvent, message=TextMessage)
-def pretty_echo(event):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=event.message.text)
-        )
-
-
-
-
-
 def getdatetimepicker():
     message = {
                "events": [
