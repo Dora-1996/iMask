@@ -82,24 +82,27 @@ def index():
                     
                 elif text == "打卡查詢" :
                     payload["messages"] = [
-                        {
-                            "type": "flex",
-                            "altText": "this is a flex message",
-                            "contents": {
-                                        "type": "bubble",
-                                        "body": {
-                                        "type": "button",
-                                        "action": {"type":"datetimepicker",
-                                                    "label":"打卡查詢",
-                                                    "data":"storeId=12345",
-                                                    "mode":"datetime",
-                                                    "initial":"2017-12-25t00:00",
-                                                    "max":"2018-01-24t23:59",
-                                                    "min":"2017-12-25t00:00"}
-                                        }
-                                    }       
-                                    }]
-                    
+                         {
+                            "type": "template",
+                            "altText": "This is a buttons template",
+                            "template": {
+                                "type": "buttons",
+                                "title": "打卡查詢",
+                                "text": "Please select time and date",
+                                "actions": [
+                                    {
+                                    "type":"datetimepicker",
+                                    "label":"Select date",
+                                    "data":"storeId=12345",
+                                    "mode":"datetime",
+                                    "initial":"2017-12-25t00:00",
+                                    "max":"2018-01-24t23:59",
+                                    "min":"2017-12-25t00:00"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
 
 
                 else:
