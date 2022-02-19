@@ -140,14 +140,8 @@ def getdatetimepicker():
                                                         ]
                                                         )
     return button_template_message
-line_bot_api = LineBotApi(config.get('line-bot', 'channel_access_token'))
 
-try:
-#     alt_text 因template只能夠在手機上顯示，因此在PC版會使用alt_Text替代
-    line_bot_api.push_message(to, TemplateSendMessage(alt_text="Template Example", template=button_template_message))
-except LineBotApiError as e:
-    # error handle
-    raise e
+
 
 
 def replyMessage(payload):
