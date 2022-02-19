@@ -81,7 +81,7 @@ def index():
                     payload["messages"] = [getPlayStickerMessage()]
                     
                 elif text == "打卡查詢" : 
-                    payload["button_template_message"] = [getdatetimepicker()]
+                    getdatetimepicker()
 
 
                 else:
