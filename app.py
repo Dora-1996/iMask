@@ -3,7 +3,7 @@ from email import message
 from flask import Flask, request, abort, render_template
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, ButtonsTemplate,  DatetimePickerTemplateAction
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, ButtonsTemplate,  DatetimePickerTemplateAction, TemplateSendMessage
 import requests
 import json
 import configparser
@@ -125,21 +125,26 @@ def getPlayStickerMessage():
 
 
 def getdatetimepicker():
-    button_template_message = ButtonsTemplate(
-                                                thumbnail_image_url="https://cdn.pixabay.com/photo/2015/07/23/15/23/cat-857076_1280.jpg",
-                                                title='打卡紀錄', 
-                                                actions=[
-                                                        DatetimePickerTemplateAction(
-                                                            label="查詢時間",
-                                                            data="action=sell&itemid=2&mode=date",
-                                                            mode="date",
-                                                            initial="2013-04-01",
-                                                            min="2011-06-23",
-                                                            max="2100-09-08"
-                                                        )
-                                                        ]
-                                                        )
-    return button_template_message
+    message = {
+      "type": "template",
+      "altText": "this is a template",
+      "template":{
+          "type": "buttons",
+          "text": "請選擇時間"},
+          "actions": [
+            {
+               "type": "datetimepicker",
+               "label": "打卡紀錄",
+               "data": "storeId=12345",
+               "mode": "datetime"
+               "initial":"2017-12-25t00:00",
+               "max":"2018-01-24t23:59",
+               "min":"2017-12-25t00:00"
+            }
+            ]
+      }
+    return message
+
 
 
 
