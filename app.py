@@ -65,7 +65,7 @@ rich_menu_to_create = RichMenu(
 rich_menu_id = line_bot_api.create_rich_menu(rich_menu=rich_menu_to_create)
 print(rich_menu_id)
 
-with open('Imask_5.png', 'rb') as f:
+with open('iMask_5.png', 'rb') as f:
     line_bot_api.set_rich_menu_image(rich_menu_id, 'image/png', f)
     line_bot_api.set_default_rich_menu(rich_menu_id)
 
