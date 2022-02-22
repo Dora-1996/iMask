@@ -1,16 +1,15 @@
 from __future__ import unicode_literals
-from email import message
 from flask import Flask, request, abort, render_template
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, ButtonsTemplate,  DatetimePickerTemplateAction, TemplateSendMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import requests
 import json
 import configparser
 import os
 from urllib import parse
 
-import time
+from datetime import datetime
 import pymysql
 
 app = Flask(__name__, static_url_path='/static')
@@ -69,42 +68,65 @@ def index():
                                     },
                                     {
                                         "type": "message",
-                                        "label": "cfi-103", 
+                                        "label": "cfi-103",
                                         "text": "cfi-103"
+                                    },
+                                    {
+                                        "type": "message",
+                                        "label": "cfi-888",
+                                        "text": "cfi-888"
                                     }
                                 ]
                             }
                         }
                     ]
                 elif text == "打卡":
-                    daka()
+                    x = events[0]['source']['userId']
+                    daka(x)
                     payload["messages"] = [getPlayStickerMessage()]
-                    
-                elif text == "打卡查詢" :
+
+                elif text == "打卡查詢":
+                    payload["messages"] = [dakaSearch()]
+
+                elif text == "cfi-102":
+                    x = 'cfi-102'
+                    a = data(x)[0]
+                    b = data(x)[1]
+                    c = data(x)[2]
                     payload["messages"] = [
-                         {
-                            "type": "template",
-                            "altText": "This is a buttons template",
-                            "template": {
-                                "type": "buttons",
-                                "title": "打卡查詢",
-                                "text": "Please select time and date",
-                                "actions": [
-                                    {
-                                    "type":"datetimepicker",
-                                    "label":"Select date",
-                                    "data":"storeId=12345",
-                                    "mode":"datetime",
-                                    "initial":"2017-12-25t00:00",
-                                    "max":"2018-01-24t23:59",
-                                    "min":"2017-12-25t00:00"
-                                    }
-                                ]
-                            }
+                        {
+                            "type": "text",
+                            "text": f"您好:{a} "
+                                    f"在{c} "
+                                    f"人流量為{b}"
                         }
                     ]
-
-
+                elif text == "cfi-103":
+                    x = 'cfi-103'
+                    a = data(x)[0]
+                    b = data(x)[1]
+                    c = data(x)[2]
+                    payload["messages"] = [
+                        {
+                            "type": "text",
+                            "text": f"您好:{a} "
+                                    f"在{c} "
+                                    f"人流量為{b}"
+                        }
+                    ]
+                elif text == "cfi-888":
+                    x = 'cfi-888'
+                    a = data(x)[0]
+                    b = data(x)[1]
+                    c = data(x)[2]
+                    payload["messages"] = [
+                        {
+                            "type": "text",
+                            "text": f"您好:{a} "
+                                    f"在{c} "
+                                    f"人流量為{b}"
+                        }
+                    ]
                 else:
                     payload["messages"] = [
                         {
@@ -114,59 +136,31 @@ def index():
                     ]
                 replyMessage(payload)
 
+        elif events[0]["type"] == "postback":
+            if "params" in events[0]["postback"]:
+                x = events[0]["postback"]["params"]["date"]
+                y = events[0]['source']['userId']
+                a = showDakaSearch(x, y)[0][0]
+                b = showDakaSearch(x, y)[0][1]
+                c = showDakaSearch(x, y)[1][0]
+                d = showDakaSearch(x, y)[1][1]
+                payload["messages"] = [
+                    {
+                        "type": "text",
+                        "text": f"{a} {b}, {c} {d}"
+                    }]
+
+                replyMessage(payload)
+
+    return 'OK'
 
 
-def getNameEmojiMessage():
-    lookUpStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-    productId = "5ac21a8c040ab15980c9b43f"
-    name = "Jason"
-    message = dict()
-    message["type"] = "text"
-    message["text"] = "".join("$" for r in range(len(name)))
-    emojis_list = list()
-    for i, nChar in enumerate(name):
-        emojis_list.append(
-            {
-                "index": i,
-                "productId": productId,
-                "emojiId": f"{lookUpStr.index(nChar) + 1 :03}"
-            }
-        )
-    message["emojis"] = emojis_list
-    return message
-
-
-def getPlayStickerMessage():
+def getPlayStickerMessage():  # 標示打卡成功用的
     message = dict()
     message["type"] = "sticker"
     message["packageId"] = "6325"
     message["stickerId"] = "10979904"
     return message
-
-
-def getdatetimepicker():
-    message = {
-      "type": "template",
-      "altText": "this is a template",
-      "template":{
-          "type": "buttons",
-          "text": "請選擇時間"},
-          "actions": [
-            {
-               "type": "datetimepicker",
-               "label": "打卡紀錄",
-               "data": "storeId=12345",
-               "mode": "datetime",
-               "initial":"2017-12-25t00:00",
-               "max":"2018-01-24t23:59",
-               "min":"2017-12-25t00:00"
-            }
-            ]
-      }
-    return message
-
-
-
 
 
 def replyMessage(payload):
@@ -179,26 +173,108 @@ def pushMessage(payload):
     return 'OK'
 
 
-def getTotalSentMessageCount():
-    response = requests.get("https://api.line.me/v2/bot/message/quota/consumption", headers=HEADER)
-    return response.json()["totalUsage"]
-
-def daka():
+def daka(x):  # 打卡功能
     connection = pymysql.connect(host="us-cdbr-east-05.cleardb.net",
                                  user="b809ff374c792c",
                                  password="bbc8de98",
                                  database="heroku_9a97caadd884ab8")
 
     cursor = connection.cursor()
-    create_date = time.strftime('%Y-%m-%d')  # 得到當前日期
-    create_time = time.strftime('%H:%M:%S')  # 得到當前時間
+    create_date = datetime.today().strftime('%Y-%m-%d')  # 得到當前日期
+    create_time = datetime.today().strftime('%H:%M:%S')  # 得到當前時間
     # 在mysql中，時間資料也是字串，故create_date和create_time還要有一組雙引號
-    sql = f"insert into wlog (EMPNO , CREATE_DATE, CREATE_TIME) values ('{168}', '{create_date}', '{create_time}')"
+    sql = f"insert into wlog (EMPNO , CREATE_DATE, CREATE_TIME) values ('{x}', '{create_date}', '{create_time}')"
     cursor.execute(sql)
 
     connection.commit()
     cursor.close()
     connection.close()
+
+
+def data(x):  # 人流查詢功能
+    connection = pymysql.connect(host="us-cdbr-east-05.cleardb.net",
+                                 user="b809ff374c792c",
+                                 password="bbc8de98",
+                                 database="heroku_9a97caadd884ab8")
+
+    cursor = connection.cursor()
+    # 在mysql中，時間資料也是字串，故create_date和create_time還要有一組雙引號
+    a = 'cfi-102'
+    b = 'cfi-103'
+    c = 'cfi-888'
+    if x == a:
+        sql = f"""select RDATE, NOWIN, LOCATION
+                    from slog s  join aiot a on s.AIOTNO = a.AIOTNO
+                    where s.AIOTNO = 'cfi-102'
+                    order by RDATE desc
+                    limit 1"""
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        return result
+    elif x == b:
+        sql = f"""select RDATE, NOWIN, LOCATION
+                    from slog s  join aiot a on s.AIOTNO = a.AIOTNO
+                    where s.AIOTNO = 'cfi-103'
+                    order by RDATE desc
+                    limit 1"""
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        return result
+    elif x == c:
+        sql = f"""select RDATE, NOWIN, LOCATION
+                    from slog s  join aiot a on s.AIOTNO = a.AIOTNO
+                    where s.AIOTNO = 'cfi-888'
+                    order by RDATE desc
+                    limit 1"""
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        return result
+    # result["RDATE"] = str(result["RDATE"])
+
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+def dakaSearch():  # 打卡時間選擇
+    message = {
+        "type": "template",
+        "altText": "this is a template",
+        "template": {
+            "type": "buttons",
+            "text": "請選擇查詢時間",
+            "actions": [
+                {
+                    "type": "datetimepicker",
+                    "label": "Select date",
+                    "data": "storeId=12345",
+                    "mode": "date"
+                }
+            ]
+        }
+    }
+    return message
+
+
+def showDakaSearch(x, y):  # 打卡查詢功能
+    connection = pymysql.connect(host="us-cdbr-east-05.cleardb.net",
+                                 user="b809ff374c792c",
+                                 password="bbc8de98",
+                                 database="heroku_9a97caadd884ab8")
+
+    cursor = connection.cursor()
+    # 在mysql中，時間資料也是字串，故create_date和create_time還要有一組雙引號
+
+    sql = f"""select CREATE_DATE, CREATE_TIME 
+                from wlog
+                where CREATE_DATE ='{x}' and EMPNO = '{y}';
+                """
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    connection.commit()
+    cursor.close()
+    connection.close()
+    return result
 
 
 if __name__ == "__main__":
