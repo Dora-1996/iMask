@@ -144,12 +144,12 @@ def index():
                 y = events[0]['source']['userId']
                 a = showDakaSearch(x, y)[0][0]
                 b = showDakaSearch(x, y)[0][1]
-                # c = showDakaSearch(x, y)[1][0]
-                # d = showDakaSearch(x, y)[1][1]
+                c = showDakaSearch(x, y)[1][0]
+                d = showDakaSearch(x, y)[1][1]
                 payload["messages"] = [
                     {
                         "type": "text",
-                        "text": f"{a} {b}"
+                        "text": f"{a} {b}, {c} {d}"
                     }]
 
                 replyMessage(payload)
