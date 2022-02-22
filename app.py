@@ -33,6 +33,43 @@ HEADER = {
     'Authorization': F'Bearer {config.get("line-bot", "channel_access_token")}'
 }
 
+from linebot import LineBotApi
+from linebot.models import (
+    RichMenu, RichMenuSize, RichMenuArea, RichMenuBounds,
+    URIAction, PostbackAction
+)
+
+rich_menu_to_create = RichMenu(
+    size=RichMenuSize(width=2500, height=1686),
+    selected=True,
+    name="Menu",
+    chat_bar_text="Menu",
+    areas=[
+        RichMenuArea(
+            bounds=RichMenuBounds(x=194, y=720, width=252, height=485),
+            action=PostbackAction(label='打卡', data='menu0', text='打卡')),
+        RichMenuArea(
+            bounds=RichMenuBounds(x=688, y=686, width=179, height=708),
+            action=PostbackAction(label='打卡查詢', data='menu1', text='打卡查詢')),
+        RichMenuArea(
+            bounds=RichMenuBounds(x=1177, y=614, width=199, height=697),
+            action=PostbackAction(label='人流查詢', data='menu2', text='人流查詢')),
+        RichMenuArea(
+            bounds=RichMenuBounds(x=1618, y=682, width=199, height=707),
+            action=PostbackAction(label='人流圖表', data='menu3', text='人流圖表')),
+        RichMenuArea(
+            bounds=RichMenuBounds(x=2093, y=691, width=252, height=616),
+            action=URIAction(label='Go line', uri='https://www.facebook.com/')),
+    ]
+)
+rich_menu_id = line_bot_api.create_rich_menu(rich_menu=rich_menu_to_create)
+print(rich_menu_id)
+
+with open('Imask_5.png', 'rb') as f:
+    line_bot_api.set_rich_menu_image(rich_menu_id, 'image/png', f)
+    line_bot_api.set_default_rich_menu(rich_menu_id)
+
+
 
 @app.route("/", methods=['POST', 'GET'])
 def index():
