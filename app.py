@@ -12,9 +12,11 @@ from urllib import parse
 from datetime import datetime
 import pymysql
 
+
 app = Flask(__name__, static_url_path='/static')
 UPLOAD_FOLDER = 'static'
 ALLOWED_EXTENSIONS = set(['pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -49,37 +51,37 @@ def index():
 
                 if text == "一般使用者":
                     payload["messages"] = [
-                        {
-                            "type": "text",
-                            "text": "Hello, user"
-                        },
-                        {
-                            "type": "template",
-                            "altText": "This is a buttons template",
-                            "template": {
-                                "type": "buttons",
-                                "title": "Menu",
-                                "text": "Please select",
-                                "actions": [
-                                    {
-                                        "type": "message",
-                                        "label": "cfi-102",
-                                        "text": "cfi-102"
-                                    },
-                                    {
-                                        "type": "message",
-                                        "label": "cfi-103",
-                                        "text": "cfi-103"
-                                    },
-                                    {
-                                        "type": "message",
-                                        "label": "cfi-888",
-                                        "text": "cfi-888"
-                                    }
-                                ]
-                            }
-                        }
-                    ]
+                                            {
+                                            "type":"text",
+                                            "text":"Hello, user"
+                                            },
+                                            {
+                                                "type": "template",
+                                                "altText": "This is a buttons template",
+                                                "template": {
+                                                    "type": "buttons",
+                                                    "title": "Menu",
+                                                    "text": "Please select",
+                                                    "actions": [
+                                                        {
+                                                            "type": "message",
+                                                            "label": "cfi-102",
+                                                            "text": "cfi-102"
+                                                        },
+                                                        {
+                                                            "type": "message",
+                                                            "label": "cfi-103",
+                                                            "text": "cfi-103"
+                                                        },
+                                                        {
+                                                            "type": "message",
+                                                            "label": "cfi-888",
+                                                            "text": "cfi-888"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                          ]
                 elif text == "打卡":
                     x = events[0]['source']['userId']
                     daka(x)
@@ -129,11 +131,11 @@ def index():
                     ]
                 else:
                     payload["messages"] = [
-                        {
-                            "type": "text",
-                            "text": text
-                        }
-                    ]
+                            {
+                                "type": "text",
+                                "text": text
+                            }
+                        ]
                 replyMessage(payload)
 
         elif events[0]["type"] == "postback":
@@ -151,11 +153,10 @@ def index():
                     }]
 
                 replyMessage(payload)
-
+            
     return 'OK'
 
-
-def getPlayStickerMessage():  # 標示打卡成功用的
+def getPlayStickerMessage(): #標示打卡成功用的
     message = dict()
     message["type"] = "sticker"
     message["packageId"] = "6325"
@@ -164,12 +165,12 @@ def getPlayStickerMessage():  # 標示打卡成功用的
 
 
 def replyMessage(payload):
-    response = requests.post("https://api.line.me/v2/bot/message/reply", headers=HEADER, data=json.dumps(payload))
+    response = requests.post("https://api.line.me/v2/bot/message/reply",headers=HEADER,data=json.dumps(payload))
     return 'OK'
 
 
 def pushMessage(payload):
-    response = requests.post("https://api.line.me/v2/bot/message/push", headers=HEADER, data=json.dumps(payload))
+    response = requests.post("https://api.line.me/v2/bot/message/push",headers=HEADER,data=json.dumps(payload))
     return 'OK'
 
 
@@ -178,6 +179,7 @@ def daka(x):  # 打卡功能
                                  user="b809ff374c792c",
                                  password="bbc8de98",
                                  database="heroku_9a97caadd884ab8")
+
 
     cursor = connection.cursor()
     create_date = datetime.today().strftime('%Y-%m-%d')  # 得到當前日期
@@ -189,7 +191,6 @@ def daka(x):  # 打卡功能
     connection.commit()
     cursor.close()
     connection.close()
-
 
 def data(x):  # 人流查詢功能
     connection = pymysql.connect(host="us-cdbr-east-05.cleardb.net",
@@ -236,23 +237,23 @@ def data(x):  # 人流查詢功能
     connection.close()
 
 
-def dakaSearch():  # 打卡時間選擇
+def dakaSearch(): #打卡時間選擇
     message = {
-        "type": "template",
-        "altText": "this is a template",
-        "template": {
-            "type": "buttons",
-            "text": "請選擇查詢時間",
-            "actions": [
-                {
-                    "type": "datetimepicker",
-                    "label": "Select date",
-                    "data": "storeId=12345",
-                    "mode": "date"
+                "type": "template",
+                "altText": "this is a template",
+                "template": {
+                    "type": "buttons",
+                    "text": "請選擇查詢時間",
+                    "actions": [
+                        {
+                            "type": "datetimepicker",
+                            "label": "Select date",
+                            "data": "storeId=12345",
+                            "mode": "date"
+                        }
+                    ]
                 }
-            ]
-        }
-    }
+            }
     return message
 
 
@@ -275,7 +276,6 @@ def showDakaSearch(x, y):  # 打卡查詢功能
     cursor.close()
     connection.close()
     return result
-
 
 if __name__ == "__main__":
     app.debug = True
